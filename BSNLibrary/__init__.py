@@ -29,6 +29,7 @@ Possible use cases
 - Checking whether a test message contains a valid BSN
 
 Create date: 01-03-2020
+
 Author: Henk van den Akker
 """
 
