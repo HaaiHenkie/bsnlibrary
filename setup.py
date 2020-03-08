@@ -6,20 +6,25 @@ with open("README.md", "r") as fh:
 
 setup(
     name='robotframework-bsnlibrary',
-    version='0.1',
+    version='0.2',
     packages=['BSNLibrary'],
     url='https://github.com/HaaiHenkie/bsnlibrary',
-    license='GNU General Public License version 3',
+    license='GNU General Public License v3 (GPLv3)',
     author='Henk van den Akker',
+    author_email='haaihenkie@users.sourceforge.net',
     description='Robot Framework library for generating BSNs (Dutch citizen service number)',
     long_description=long_description,
     long_description_content_type="text/markdown",
     classifiers=[
-        "Programming Language :: Python :: 3",
-        "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
-        "Operating System :: OS Independent",
         "Development Status :: 4 - Beta",
+        "Intended Audience :: Developers",
+        "Topic :: Software Development :: Testing",
         "Framework :: Robot Framework :: Library",
+        "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+        "Programming Language :: Python :: 2.7",
+        "Programming Language :: Python :: 3",
+        "Operating System :: OS Independent",
     ],
-    install_requires=['robotframework']
+    install_requires=['robotframework'],
+    python_requires='>=2.7'
 )

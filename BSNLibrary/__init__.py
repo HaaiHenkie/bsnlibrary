@@ -39,7 +39,7 @@ from BSNLibrary import exceptions
 from robot.api.deco import keyword
 import logging
 
-__version__ = '0.1'
+__version__ = '0.2'
 ROBOT_LIBRARY_SCOPE = 'GLOBAL'
 VALID_LENGTH = {6, 7, 8, 9}
 used_bsns = []
