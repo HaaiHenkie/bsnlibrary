@@ -14,5 +14,5 @@ class NumberNotValid(Error):
 
 
 class FailedToGenerateUniqueBSN(Error):
-    """Raised when after 100 retries no unique BSN could be generated."""
+    """Raised when after 1000 retries no unique BSN could be generated."""
     ROBOT_SUPPRESS_NAME = True
