@@ -11,7 +11,7 @@ setup(
     url='https://github.com/HaaiHenkie/bsnlibrary',
     license='GNU General Public License v3 (GPLv3)',
     author='Henk van den Akker',
-    author_email='haaihenkie@users.sourceforge.net',
+    author_email='haaihenkie@users.noreply.github.com',
     description='Robot Framework library for generating BSNs (Dutch citizen service number)',
     long_description=long_description,
     long_description_content_type="text/markdown",
