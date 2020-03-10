@@ -73,12 +73,12 @@ def generate_bsn(given="", length=9, unique=True):
 
     == Examples ==
 
-    | ${bsn1} | Generate BSN | | # Generates a valid BSN between 100000000 and 799999999. |
-    | ${bsn2} | Generate BSN | 85 | # Generates a valid BSN with '85' as the first 2 digits. |
-    | ${bsn3} | Generate BSN | 211551557 | # Validates the given (valid) BSN. |
-    | ${bsn4} | Generate BSN | 9994 | # Generates an invalid BSN. |
-    | ${bsn5} | Generate BSN | ${bsn4} | # Validates the given (invalid) BSN. |
-    | ${bsn6} | Generate BSN | length=8 | # Generates a BSN with 8 positions. |
+    | ${bsn1} = | Generate BSN | | # Generates a valid BSN between 100000000 and 799999999. |
+    | ${bsn2} = | Generate BSN | 85 | # Generates a valid BSN with '85' as the first 2 digits. |
+    | ${bsn3} = | Generate BSN | 211551557 | # Validates the given (valid) BSN. |
+    | ${bsn4} = | Generate BSN | 9994 | # Generates an invalid BSN. |
+    | ${bsn5} = | Generate BSN | ${bsn4} | # Validates the given (invalid) BSN. |
+    | ${bsn6} = | Generate BSN | length=8 | # Generates a BSN with 8 positions. |
 
     === Example results ===
 
@@ -199,7 +199,7 @@ def get_generated_bsns():
     | FOR | ${i} | IN RANGE | 0 | 100 |
     | | Generate BSN | | | | # Do not use unique=False |
     | END | | | | | # for no list will be generated |
-    | @{generated_bsn} | Get Generated BSNs | | | | # A list of 100 unique BSNs |
+    | @{generated_bsn} = | Get Generated BSNs | | | | # A list of 100 unique BSNs |
 
     """
     return used_bsns
