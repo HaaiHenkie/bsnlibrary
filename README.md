@@ -29,7 +29,7 @@ Possible use cases
 - Creating messages with BSNs in a certain range that leads to a certain response from a system or stub
 - Checking whether a test message contains a valid BSN
 
-[Keyword documentation](https://haaihenkie.github.io/bsnlibrary/)
+[https://haaihenkie.github.io/bsnlibrary/|Keyword documentation]
 
 Create date: 01-03-2020
 
