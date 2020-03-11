@@ -92,12 +92,13 @@ def generate_bsn(given="", length=9, unique=True):
     | ${bsn6} = 30340731
     """
     global used_bsns
-    given: str = str(given)
-    given_length: int = len(given)
-    length: int = int(length)
-    unique: bool = bool(unique)
-    if given_length == length:
+    given = str(given)
+    given_length = len(given)
+    length = int(length)
+    if str(unique).lower() in ('false', 'none', 'no', 'off', '0') or given_length == length:
         unique = False
+    else:
+        unique = bool(unique)
     if length not in VALID_LENGTH:
         raise ValueError("Value for length must be 6, 7, 8 or 9.")
     if given_length > length or given_length == length - 1:
@@ -105,8 +106,8 @@ def generate_bsn(given="", length=9, unique=True):
             The length of the given number, %d digits, is longer than length, %d, 
             or equal to length - 1. That is not allowed.""" % (given_length, length)))
     if unique:
-        generated_bsn: str = ""
-        iteration: int = 0
+        generated_bsn = ""
+        iteration = 0
         while generated_bsn == "" or generated_bsn in used_bsns:
             iteration += 1
             if iteration == 1000:
@@ -124,11 +125,11 @@ def generate_bsn(given="", length=9, unique=True):
         used_bsns.append(generated_bsn)
         return generated_bsn
     else:
-        sum_product: int = 0
-        pos: int = length
-        digit1: int
-        digit2: int
-        generated_bsn: str = ""
+        sum_product = 0
+        pos = length
+        digit1 = None
+        digit2 = None
+        generated_bsn = ""
         if given_length > 0:
             for d in given:
                 try:
@@ -143,21 +144,21 @@ def generate_bsn(given="", length=9, unique=True):
                     e.args = ("The character '%s' is not a digit. Only use digits in the given number." % d,)
                     raise
         else:
-            digit: int = random.randint(1, 7)
+            digit = random.randint(1, 7)
             sum_product = sum_product + digit * pos
             generated_bsn = str(digit)
             pos = pos - 1
         while pos > 1:
             if pos == length - 2 and generated_bsn[:1] == "9":
-                digit: int = random.randint(0, 8)
+                digit = random.randint(0, 8)
             else:
-                digit: int = random.randint(0, 9)
+                digit = random.randint(0, 9)
             sum_product = sum_product + digit * pos
             generated_bsn += str(digit)
             if pos == 2:
                 digit2 = digit
             pos = pos - 1
-        mod: int = sum_product % 11
+        mod = sum_product % 11
         if given[:3] == "999" and given_length < length:
             digit1 = _exclude_digit(mod)
         else:
@@ -217,5 +218,5 @@ def clear_generated_bsns():
     """
     global used_bsns
     count = len(used_bsns)
-    used_bsns.clear()
+    del used_bsns[:]
     logging.info("List of %d generated BSNs has been cleared." % count)
