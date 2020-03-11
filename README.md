@@ -1,9 +1,10 @@
 # BSNLibrary for Robot Framework
 
 Robot Framework Library for generating a random BSN (Burger Service Nummer, i.e. a
-Dutch citizen service number)
+Dutch citizen service number) for test purposes.
 
-A BSN is used in Netherlands to identify a person for governmental organisations.
+A BSN is used in Netherlands to identify a person for government organisations, see
+[this information of the Dutch government](https://www.government.nl/topics/personal-data/citizen-service-number-bsn).
 The number consists of 9 digits and has to pass the eleven test.
 
 This test can be explained with the example 211551557. Each digit is multiplied with
