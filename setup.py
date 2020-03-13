@@ -6,9 +6,14 @@ with open("README.md", "r") as fh:
 
 setup(
     name='robotframework-bsnlibrary',
-    version='0.2',
+    version='0.2.1',
     packages=['BSNLibrary'],
     url='https://github.com/HaaiHenkie/bsnlibrary',
+    project_urls={
+        'Documentation': 'https://haaihenkie.github.io/bsnlibrary/',
+        'Source': 'https://github.com/HaaiHenkie/bsnlibrary',
+        'Tracker': 'https://github.com/HaaiHenkie/bsnlibrary/issues',
+    },
     license='GNU General Public License v3 (GPLv3)',
     author='Henk van den Akker',
     author_email='haaihenkie@users.noreply.github.com',

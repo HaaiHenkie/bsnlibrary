@@ -15,6 +15,13 @@ its position and the results are added up together:
 Note that the digit in position 1 is subtracted from the other results. The total
 sum can be divided by 11, which means that this number has passed the eleven test.
 
+This library generates BSNs for test purposes in the sense that it generates random
+9 digit numbers that pass the eleven test. By coincidence a generated number could
+be a real person's BSN. Yet this library cannot violate such a person's privacy,
+because it cannot tell you whether a number belongs to a real person or not, nor
+will it provide you with any personal data related to a BSN. Obviously you should
+only use this library in test environments.
+
 This library brings the following features to Robot Framework:
 - generating a valid BSN
 - generating a BSN that is unique within the current test run
