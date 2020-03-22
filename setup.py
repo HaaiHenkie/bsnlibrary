@@ -6,7 +6,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name='robotframework-bsnlibrary',
-    version='0.2.1',
+    version='0.3',
     packages=['BSNLibrary'],
     url='https://github.com/HaaiHenkie/bsnlibrary',
     project_urls={

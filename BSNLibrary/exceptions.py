@@ -13,6 +13,6 @@ class NumberNotValid(Error):
     ROBOT_SUPPRESS_NAME = True
 
 
-class FailedToGenerateUniqueBSN(Error):
-    """Raised when after 1000 retries no unique BSN could be generated."""
+class FailedToGenerateAllowedBSN(Error):
+    """Raised when after 1000 retries no allowed BSN could be generated."""
     ROBOT_SUPPRESS_NAME = True

@@ -30,14 +30,20 @@ This library brings the following features to Robot Framework:
 - generating a BSN that is less than 9 digits long
 - checking if a given number passes the eleven test
 - returning a list of BSNs generated during the current test run
-- clearing the list of BSNs generated during the current test run
+- specifying BSNs that should not be generated
 
-Possible use cases
+Possible use cases:
 - A test message that is processed by one or more systems can be tracked by its unique BSN
 - Creating messages with BSNs in a certain range that leads to a certain response from a system or stub
 - Checking whether a test message contains a valid BSN
 
+Installation:
+
+``pip install robotframework-bsnlibrary``
+
 [Keyword documentation](https://haaihenkie.github.io/bsnlibrary/)
+
+[Installation package on PyPI](https://pypi.org/project/robotframework-bsnlibrary/)
 
 Create date: 01-03-2020
 
