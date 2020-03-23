@@ -38,6 +38,16 @@ Installation:
 
 ``pip install robotframework-bsnlibrary``
 
+[https://pypi.org/project/robotframework-bsnlibrary/|Installation package on PyPI]
+
+[https://github.com/HaaiHenkie/bsnlibrary|GitHub repository]
+
+Create date: 01-03-2020
+
+Author: Henk van den Akker
+
+License: GNU General Public License v3.0
+
 = Scope of uniqueness and exclusion =
 `Generate BSN` will by default generate a unique BSN every time it is used throughout the test run. After using
 `Exclude BSNs` with a list of BSNs, `Generate BSN` will exclude those BSNs every time it is used until the end of the
@@ -108,10 +118,6 @@ for the exceptions above.
 
 When you are not able to resolve a problem regarding BSNLibrary,
 [https://github.com/HaaiHenkie/bsnlibrary/issues/new|register an issue].
-
-Create date: 01-03-2020
-
-Author: Henk van den Akker
 """
 
 import random
