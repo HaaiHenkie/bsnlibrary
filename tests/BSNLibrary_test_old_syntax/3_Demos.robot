@@ -14,9 +14,8 @@ Extending the scope of uniqueness beyond one test run
     ${length}    Run Keyword If    ${status}==True    Get Length    ${bsnlist}
     ...    ELSE    Set Variable    0
     Run Keyword If    ${status}==True and ${length}<1000    Exclude BSNs    ${bsnlist}
-    FOR    ${i}    IN RANGE    100
-        Generate BSN
-    END
+    :FOR    ${i}    IN RANGE    100
+    \    Generate BSN
     ${excluded}    Get Excluded BSNs
     ${generated}    Get Generated BSNs
     ${bsnlist}    Combine Lists    ${excluded}    ${generated}
@@ -33,18 +32,16 @@ Why you should not try to generate the last 1% of all permitted BSNs
     ...
     ...    Suppose you really need to find all possible BSNs in larges ranges: _Finding all BSNs in a ranges_ demonstrates how this can be done.
     ${counts}    Create List
-    FOR    ${i}    IN RANGE    11
-        ${count}    Not able to generate the last 1% of 909 permitted BSNs
-        Append To List    ${counts}    ${count}
-    END
+    :FOR    ${i}    IN RANGE    11
+    \    ${count}    Not able to generate the last 1% of 909 permitted BSNs
+    \    Append To List    ${counts}    ${count}
     ${counts}    Remove Duplicates    ${counts}
     Sort List    ${counts}
     Log    ${counts}
 
 Finding all BSNs in a range
     [Documentation]    If you came to see the demonstration of _Why you should not try to generate the last 1% of all permitted BSNs_ you might have the exceptional need to find all numbers within a range. _Generate BSNs_ is not suitable for that purpose, because it was developed for generating random BSNs within a range. If you really need this, you should divide your range in ranges of 100 numbers. A range of 100 numbers contains 9 or 10 numbers. That means that you have 10% to 11% of finding the last BSN in this range. That is very well above the 1 percent and you will certainly find all BSNs. This demonstration shows how this can be done.
-    FOR    ${given}    IN RANGE    1234500    1234600
-        Generate all BSNs in a smaller range    ${given}
-    END
+    :FOR    ${given}    IN RANGE    1234500    1234600
+    \    Generate all BSNs in a smaller range    ${given}
     ${allbsns}    Get Generated BSNs
     Get Length    ${allbsns}

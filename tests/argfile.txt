@@ -1,4 +1,4 @@
 --test
-BSNLibrary test.1 Functional tests.Deprecated validate*
---test
 BSNLibrary test.1 Functional tests.Clear list of*
+--test
+BSNLibrary test.1 Functional tests.Validate a valid BSN with variable lengths

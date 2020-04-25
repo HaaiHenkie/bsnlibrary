@@ -38,13 +38,16 @@ Possible use cases:
 - Checking whether a test message contains a valid BSN
 
 ## Backward compatibility
-So far all releases have been backward compatible, including current release 0.4.0. However, in the current release
-the use of `Generate BSN` for validation has been deprecated. When your test suite still uses ``Generate BSN`` for
-validation, you will receive a warning and a recommendation to replace it with the keyword `Validate BSN`. In the
-next major release using `Generate BSN` for validation will result in an error message.
+BSNLibrary v1.0.0 and later is not compatible with previous versions in the sense that is does not allow you to 
+validate a BSN with _Generate BSN_. You should use _Validate BSN_ instead. If your test suite still uses _Generate 
+BSN_ for validation it will generate an error saying that the length of ``given`` exceeds the maximum value. In case 
+you have test suites using _Generate BSN_ for validation you can install BSNLibrary v0.4.0 for a smooth transition: 
 
-Please note that I have changed version labels v0.1, v0.2 and v0.3 to v0.1.0, v0.2.0 and v0.3.0 in order to comply 
-with semantic versioning.
+``pip install robotframework-bsnlibrary==0.4.0``
+
+Your test suite will still run, but you will receive a warning of any deprecated use of _Generate BSN_ and a 
+recommendation to replace it with the keyword _Validate BSN_. This allows you to convert your test suites at your own 
+pace. 
 
 ## Installation
 ``pip install robotframework-bsnlibrary``

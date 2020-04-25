@@ -24,9 +24,8 @@ Generate and validate BSNs with variable length
     ...    There is a 9% chance that the result of the calculation is a remainder of 10. In that case there is no solution because a single digit cannot be equal to 10. In order to be able to still generate a valid BSN, _Generate BSN_ randomly chooses another second last digit unequal to the original value and calculates the last digit again.
     ...
     ...    To make sure that this situation is covered, _Generate BSN_ is repeated a 100 times.
-    FOR    ${length}    IN RANGE    6    10
-        Generate and validate 100 BSNs    ${length}
-    END
+    :FOR    ${length}    IN RANGE    6    10
+    \    Generate and validate 100 BSNs    ${length}
 
 Generate and validate invalid BSNs with variable length
     [Documentation]    Generates 100 invalid BSNs for every possible ``length``: 6, 7, 8 or 9. Default value 9 is covered by passing ``length=9`` to _Generate BSN_ as well as by leaving out the ``length`` argument.
@@ -35,9 +34,8 @@ Generate and validate invalid BSNs with variable length
     ...    - the generated BSNs are invalid
     ...    - the lengths of the generated BSNs corresponds with ``length``
     ...    - the generated BSNs have a value in the range that is indicated by the ``given`` value 999, e.g. between 999000000 and 999999999 for ``length`` 9
-    FOR    ${length}    IN RANGE    6    10
-        Generate and validate 100 invalid BSNs    ${length}
-    END
+    :FOR    ${length}    IN RANGE    6    10
+    \    Generate and validate 100 invalid BSNs    ${length}
 
 Generated valid BSNs are not allowed to start with 999
     [Documentation]    _Generate BSN_ will generate an invalid BSN when ``given`` starts with '999'. To avoid misinterpretation, _Generate BSN_ should not accidentally generate a valid BSN that starts with '999'.
@@ -50,9 +48,8 @@ Generated valid BSNs are not allowed to start with 999
     ...    - digit 9 can occur on the second and the third position of the generated BSNs
     ...
     ...    With 9 as the first digit and the second and third digit randomly selected, the chance for a generated number to start with '999' would be 1%. That is why _Generate BSN_ is repeated a 1000 times to make sure the generated numbers never start with '999'.
-    FOR    ${length}    IN RANGE    6    10
-        Generate 1000 BSNs starting with 9    ${length}
-    END
+    :FOR    ${length}    IN RANGE    6    10
+    \    Generate 1000 BSNs starting with 9    ${length}
 
 Generate with enforcing unique BSNs turned off
     [Documentation]    Steps:
@@ -68,9 +65,8 @@ Generate with enforcing unique BSNs turned off
     ...    - the lengths of the generated BSNs corresponds with ``length``
     ...    - the generated BSNs have a value in the range that is indicated by ``given``
     ...    - _Generate BSN_ handles the "remainder of 10" situation correctly, see explanation under test case _Generate and validate BSNs with variable length_
-    FOR    ${length}    IN RANGE    6    10
-        Generate 100 BSNs with enforcing unique BSNs turned off    ${length}
-    END
+    :FOR    ${length}    IN RANGE    6    10
+    \    Generate 100 BSNs with enforcing unique BSNs turned off    ${length}
 
 Exclude BSNs as list with variable length from being generated
     [Documentation]    Steps:
@@ -101,9 +97,8 @@ Exclude BSNs as list with variable length from being generated
     Append To List    ${checklists}    ${checklist}
     ${checklist}    Create List    123407    123419    123420    123432    123444    123456    123468    123481    123493
     Append To List    ${checklists}    ${checklist}
-    FOR    ${length}    ${checklist}    IN ZIP    ${lengths}    ${checklists}
-        Exclude BSNs as list from being generated    ${length}    ${checklist}
-    END
+    :FOR    ${length}    ${checklist}    IN ZIP    ${lengths}    ${checklists}
+    \    Exclude BSNs as list from being generated    ${length}    ${checklist}
 
 Exclude BSNs as string with variable length from being generated
     [Documentation]    Steps:
@@ -134,9 +129,8 @@ Exclude BSNs as string with variable length from being generated
     Append To List    ${checklists}    ${checklist}
     ${checklist}    Create List    123407    123419    123420    123432    123444    123456    123468    123481    123493
     Append To List    ${checklists}    ${checklist}
-    FOR    ${length}    ${checklist}    IN ZIP    ${lengths}    ${checklists}
-        Exclude BSNs as string from being generated    ${length}    ${checklist}
-    END
+    :FOR    ${length}    ${checklist}    IN ZIP    ${lengths}    ${checklists}
+    \    Exclude BSNs as string from being generated    ${length}    ${checklist}
 
 Clear list of generated BSNs with variable length
     [Documentation]    Steps:
@@ -175,9 +169,8 @@ Clear list of generated BSNs with variable length
     ...
     ...    LOG 3.5.1.9 INFO List of 9 generated BSNs has been cleared.
     @{lengths}    Create List    ${None}    ${9}    ${8}    ${7}    ${6}
-    FOR    ${length}    IN    @{lengths}
-        Clear list of generated BSNs    ${length}
-    END
+    :FOR    ${length}    IN    @{lengths}
+    \    Clear list of generated BSNs    ${length}
 
 Clear list of excluded BSNs with variable length
     [Documentation]    Steps:
@@ -216,9 +209,8 @@ Clear list of excluded BSNs with variable length
     ...
     ...    LOG 3.5.1.12 INFO The list of excluded BSNs has been cleared.
     @{lengths}    Create List    ${None}    ${9}    ${8}    ${7}    ${6}
-    FOR    ${length}    IN    @{lengths}
-        Clear list of excluded BSNs    ${length}
-    END
+    :FOR    ${length}    IN    @{lengths}
+    \    Clear list of excluded BSNs    ${length}
 
 Validate a valid BSN with variable lengths
     [Documentation]    Validates a valid BSN for every possible ``length``: 6, 7, 8 or 9.
@@ -236,9 +228,8 @@ Validate a valid BSN with variable lengths
     ...
     ...    LOG 3.4.1 INFO The BSN '353000' is valid.
     @{bsns}    Create List    747359489    25221577    1763921    353000
-    FOR    ${bsn}    IN    @{bsns}
-        Validate BSN    ${bsn}
-    END
+    :FOR    ${bsn}    IN    @{bsns}
+    \    Validate BSN    ${bsn}
 
 Validate invalid BSNs with variable length
     [Documentation]    Validates an invalid BSN for every possible ``length``: 6, 7, 8 or 9.
@@ -255,6 +246,5 @@ Validate invalid BSNs with variable length
     # Path: last digit not equal to remainder
     Append To List    ${bsns}    207232909    23533128    7894067    314616
     # Validate all given BSNs
-    FOR    ${bsn}    IN    @{bsns}
-        Run Keyword and Expect Error    The given number '${bsn}' is not valid.    Validate BSN    ${bsn}
-    END
+    :FOR    ${bsn}    IN    @{bsns}
+    \    Run Keyword and Expect Error    The given number '${bsn}' is not valid.    Validate BSN    ${bsn}

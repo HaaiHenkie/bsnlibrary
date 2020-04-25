@@ -35,13 +35,16 @@ Possible use cases:
 - Checking whether a test message contains a valid BSN
 
 == Backward compatibility ==
-So far all releases have been backward compatible, including current release 0.4.0. However, in the current release
-the use of `Generate BSN` for validation has been deprecated. When your test suite still uses ``Generate BSN`` for
-validation, you will receive a warning and a recommendation to replace it with the keyword `Validate BSN`. In the
-next major release using `Generate BSN` for validation will result in an error message.
+BSNLibrary v1.0.0 and later is not compatible with previous versions in the sense that is does not allow you to
+validate a BSN with `Generate BSN`. You should use `Validate BSN` instead. If your test suite still uses `Generate
+BSN` for validation it will generate an error saying that the length of ``given`` exceeds the maximum value. In case
+you have test suites using `Generate BSN` for validation you can install BSNLibrary v0.4.0 for a smooth transition:
 
-Please note that I have changed version labels v0.1, v0.2 and v0.3 to v0.1.0, v0.2.0 and v0.3.0 in order to comply
-with semantic versioning.
+``pip install robotframework-bsnlibrary==0.4.0``
+
+Your test suite will still run, but you will receive a warning of any deprecated use of `Generate BSN` and a
+recommendation to replace it with the keyword `Validate BSN`. This allows you to convert your test suites at your own
+pace.
 
 == Installation ==
 ``pip install robotframework-bsnlibrary``
@@ -51,6 +54,7 @@ Apart from the library files, the following files are installed
 | *File* | *Description* |
 | <python dir>/Lib/site-packages/BSNLibrary/docs/index.html | Local copy of this keyword documentation |
 | <python dir>/Lib/site-packages/BSNLibrary/tests/BSNLibrary_test/ | Robot Framework (v3.1 or later) test suite for testing BSNLibrary |
+| <python dir>/Lib/site-packages/BSNLibrary/tests/BSNLibrary_test_old_syntax/ | Robot Framework (v3.1 or earlier) the same test suite for testing BSNLibrary with the old ``:FOR`` loop syntax |
 
 == General information ==
 
@@ -136,12 +140,11 @@ from BSNLibrary import exceptions
 from robot.api import deco
 import logging
 
-__version__ = '0.4.0'
+__version__ = '1.0.0'
 ROBOT_LIBRARY_SCOPE = 'GLOBAL'
 VALID_LENGTH = {6, 7, 8, 9}
 used_bsns = []
 excluded_bsns = []
-deprecated = True
 
 
 @deco.keyword('Generate BSN')
@@ -158,7 +161,7 @@ def generate_bsn(given="", length=9, unique=True):
       digits is equal to ``length``)
     - To generate an invalid number, specify '999' as the first three digits
     - The ``given`` string can only contain digits
-    - The number of digits should be smaller than ``length - 1`` or equal to ``length``
+    - The maximum number of digits is ``length - 2``
 
     ``length`` argument can be used to generate a number of less than 9 positions, for example to test a situation
     where it is permitted to leave out leading zeroes or a situation where this is not permitted.
@@ -186,23 +189,15 @@ def generate_bsn(given="", length=9, unique=True):
     | ${bsn5} => FAIL : The given number '999450437' is not valid.
     | ${bsn6} = 30340731
     """
-    global used_bsns
-    global deprecated
     given = str(given)
     given_length = len(given)
-    length = int(length)
-    if given_length == length and deprecated:
-        logging.warning("Validation with 'Generate BSN' is deprecated. Use 'Validate BSN' instead.")
-    else:
-        deprecated = True
     if length not in VALID_LENGTH:
         raise ValueError("Value for length must be 6, 7, 8 or 9.")
-    forbidden = length - 1
-    if given_length > length or given_length == forbidden:
+    max_length = length - 2
+    if given_length > max_length:
         raise exceptions.GivenNumberWrongLength(textwrap.dedent("""\
-            The length of the given number, %d digits, is not allowed. For validating a BSN this length should be 
-            equal to the 'length' argument, in this case %d. For generating a BSN this length should be smaller than 
-            the 'length' argument - 1, in this case smaller than %d.""" % (given_length, length, forbidden)))
+            The length of the given number, %d digits, exceeds the maximum value. This maximum value equals 
+            'length' argument - 2, in this case %d - 2 = %d.""" % (given_length, length, max_length)))
     if str(unique).lower() in ('false', 'none', 'no', 'off', '0') or given_length == length:
         unique = False
     else:
@@ -210,96 +205,107 @@ def generate_bsn(given="", length=9, unique=True):
     power = length - given_length
     all_numbers = 10 ** power
     min_numbers = int(all_numbers / 11)
-    max_numbers = min_numbers + 1
     if given[:3] == "999":
-        min_numbers = all_numbers - max_numbers
-        max_numbers = min_numbers + 1
+        min_numbers = all_numbers - min_numbers - 1
     excluded_matches = sum(e[:given_length] == given and len(e) == length for e in excluded_bsns)
+    if unique:
+        generated_bsn = _check_uniqueness(given, length, given_length, excluded_matches, min_numbers)
+    else:
+        generated_bsn = _check_exclusion(given, length, given_length, excluded_matches, min_numbers)
+    return generated_bsn
+
+
+def _check_uniqueness(given, length, given_length, excluded_matches, min_numbers):
+    global used_bsns
+    generated_bsn = ""
     min_possible = min_numbers - excluded_matches
     max_possible = min_possible + 1
-    if unique:
-        generated_bsn = ""
-        iteration = 0
-        while generated_bsn == "" or generated_bsn in used_bsns:
-            iteration += 1
-            if iteration == 1001:
-                used_matches = sum(e[:given_length] == given and len(e) == length for e in used_bsns)
-                raise exceptions.FailedToGenerateAllowedBSN(textwrap.dedent("""\
-                    'Generate BSN' was not able to generate a unique BSN after 1000 retries. You have generated %d 
-                    out of the %d or %d unique BSNs that are permitted by %d excluded BSNs and arguments given=%s 
-                    and length=%d. See section Troubleshooting on web page https://haaihenkie.github.io/bsnlibrary/ 
-                    for possible solutions.""" % (used_matches, min_possible, max_possible, excluded_matches, given,
-                    length)))
-            generated_bsn = generate_bsn(given, length, False)
-        used_bsns.append(generated_bsn)
-        return generated_bsn
+    iteration = 0
+    while generated_bsn == "" or generated_bsn in used_bsns:
+        iteration += 1
+        if iteration == 1001:
+            used_matches = sum(e[:given_length] == given and len(e) == length for e in used_bsns)
+            raise exceptions.FailedToGenerateAllowedBSN(textwrap.dedent("""\
+                'Generate BSN' was not able to generate a unique BSN after 1000 retries. You have generated %d 
+                out of the %d or %d unique BSNs that are permitted by %d excluded BSNs and arguments given=%s 
+                and length=%d. See section Troubleshooting on web page https://haaihenkie.github.io/bsnlibrary/ 
+                for possible solutions.""" % (used_matches, min_possible, max_possible, excluded_matches, given,
+                                              length)))
+        generated_bsn = _check_exclusion(given, length, given_length, excluded_matches, min_numbers)
+    used_bsns.append(generated_bsn)
+    return generated_bsn
+
+
+def _check_exclusion(given, length, given_length, excluded_matches, min_numbers):
+    generated_bsn = ""
+    max_numbers = min_numbers + 1
+    iteration = 0
+    while generated_bsn == "" or generated_bsn in excluded_bsns:
+        iteration += 1
+        if iteration == 1001:
+            raise exceptions.FailedToGenerateAllowedBSN(textwrap.dedent("""\
+                'Generate BSN' was not able to generate a BSN outside the list of excluded BSNs after 1000 
+                retries. You have excluded %d out of the %d or %d BSNs that are permitted by arguments given=%s 
+                and length=%d. See section Troubleshooting on web page https://haaihenkie.github.io/bsnlibrary/ 
+                for possible solutions.""" % (excluded_matches, min_numbers, max_numbers, given, length)))
+        generated_bsn = _generate_validate(given, length, given_length)
+    return generated_bsn
+
+
+def _generate_validate(given, length, given_length):
+    sum_product = 0
+    pos = length
+    digit1 = None
+    digit2 = None
+    generated_bsn = ""
+    if given_length > 0:
+        for d in given:
+            try:
+                d = int(d)
+                if pos > 1:
+                    sum_product = sum_product + d * pos
+                    generated_bsn += str(d)
+                else:
+                    digit1 = d
+                pos = pos - 1
+            except (TypeError, ValueError) as e:
+                e.args = ("Character '%s' is not a digit. Only use digits as part of a BSN." % d,)
+                raise
     else:
-        generated_bsn = ""
-        iteration = 0
-        excluded = []
-        if given_length < length:
-            excluded = excluded_bsns
-        while generated_bsn == "" or generated_bsn in excluded:
-            iteration += 1
-            if iteration == 1001:
-                raise exceptions.FailedToGenerateAllowedBSN(textwrap.dedent("""\
-                    'Generate BSN' was not able to generate a BSN outside the list of excluded BSNs after 1000 
-                    retries. You have excluded %d out of the %d or %d BSNs that are permitted by arguments given=%s 
-                    and length=%d. See section Troubleshooting on web page https://haaihenkie.github.io/bsnlibrary/ 
-                    for possible solutions.""" % (excluded_matches, min_numbers, max_numbers, given, length)))
-            sum_product = 0
-            pos = length
-            digit1 = None
-            digit2 = None
-            generated_bsn = ""
-            if given_length > 0:
-                for d in given:
-                    try:
-                        d = int(d)
-                        if pos > 1:
-                            sum_product = sum_product + d * pos
-                            generated_bsn += str(d)
-                        else:
-                            digit1 = d
-                        pos = pos - 1
-                    except (TypeError, ValueError) as e:
-                        e.args = ("Character '%s' is not a digit. Only use digits as part of a BSN." % d,)
-                        raise
-            else:
-                digit = random.randint(1, 7)
-                sum_product = sum_product + digit * pos
-                generated_bsn = str(digit)
-                pos = pos - 1
-            while pos > 1:
-                if pos == length - 2 and generated_bsn[:2] == "99":
-                    digit = random.randint(0, 8)
-                else:
-                    digit = random.randint(0, 9)
-                sum_product = sum_product + digit * pos
-                generated_bsn += str(digit)
-                if pos == 2:
-                    digit2 = digit
-                pos = pos - 1
+        digit = random.randint(1, 7)
+        sum_product = sum_product + digit * pos
+        generated_bsn = str(digit)
+        pos = pos - 1
+    while pos > 1:
+        if pos == length - 2 and generated_bsn[:2] == "99":
+            digit = random.randint(0, 8)
+        else:
+            digit = random.randint(0, 9)
+        sum_product = sum_product + digit * pos
+        generated_bsn += str(digit)
+        if pos == 2:
+            digit2 = digit
+        pos = pos - 1
+    mod = sum_product % 11
+    if given[:3] == "999" and given_length < length:
+        digit1 = _exclude_digit(mod)
+    else:
+        if given_length == length:
+            if digit1 != mod:
+                raise exceptions.NumberNotValid("The given number '%s' is not valid." % given)
+        elif mod == 10:
+            # logging.info("REMAINDER 10 GENERATION PATH: generated string '%s'." % generated_bsn)
+            sum_product = sum_product - digit2 * 2
+            generated_bsn = generated_bsn[:-1]
+            digit2 = _exclude_digit(digit2)
+            generated_bsn += str(digit2)
+            sum_product = sum_product + digit2 * 2
             mod = sum_product % 11
-            if given[:3] == "999" and given_length < length:
-                digit1 = _exclude_digit(mod)
-            else:
-                if given_length == length:
-                    if digit1 != mod:
-                        raise exceptions.NumberNotValid("The given number '%s' is not valid." % given)
-                elif mod == 10:
-                    # logging.info("REMAINDER 10 GENERATION PATH: generated string '%s'." % generated_bsn)
-                    sum_product = sum_product - digit2 * 2
-                    generated_bsn = generated_bsn[:-1]
-                    digit2 = _exclude_digit(digit2)
-                    generated_bsn += str(digit2)
-                    sum_product = sum_product + digit2 * 2
-                    mod = sum_product % 11
-                    digit1 = mod
-                else:
-                    digit1 = mod
-            generated_bsn += str(digit1)
-        return generated_bsn
+            digit1 = mod
+        else:
+            digit1 = mod
+    generated_bsn += str(digit1)
+    return generated_bsn
 
 
 def _exclude_digit(digit):
@@ -316,12 +322,11 @@ def validate_bsn(bsn):
 
     ``bsn`` argument is a string of 6, 7, 8 or 9 digits
     """
-    global deprecated
-    deprecated = False
+    bsn = str(bsn)
     length = len(bsn)
     if length not in VALID_LENGTH:
         raise ValueError("Length of BSN can only be 6, 7, 8 or 9 digits.")
-    generate_bsn(bsn, length, False)
+    _generate_validate(bsn, length, length)
     logging.info("The BSN '%s' is valid." % bsn)
 
 

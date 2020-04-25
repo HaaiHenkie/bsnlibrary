@@ -3,10 +3,9 @@ from setuptools import setup
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
-
 setup(
     name='robotframework-bsnlibrary',
-    version='0.4.0',
+    version='1.0.0',
     packages=['BSNLibrary'],
     url='https://github.com/HaaiHenkie/bsnlibrary',
     project_urls={
@@ -21,7 +20,7 @@ setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     classifiers=[
-        "Development Status :: 4 - Beta",
+        "Development Status :: 5 - Production/Stable",
         "Intended Audience :: Developers",
         "Topic :: Software Development :: Testing",
         "Framework :: Robot Framework :: Library",
@@ -32,11 +31,18 @@ setup(
     ],
     data_files=[
         ('Lib/site-packages/BSNLibrary/docs', ['docs/index.html']),
-        ('Lib/site-packages/BSNLibrary/tests', ['tests/BSNLibrary_test/__init__.robot',
-                                                'tests/BSNLibrary_test/1_Functional_tests.robot',
-                                                'tests/BSNLibrary_test/2_Error_handling.robot',
-                                                'tests/BSNLibrary_test/3_Demos.robot',
-                                                'tests/BSNLibrary_test/Resource.robot'])
+        ('Lib/site-packages/BSNLibrary/tests/BSNLibrary_test', [
+            'tests/BSNLibrary_test/__init__.robot',
+            'tests/BSNLibrary_test/1_Functional_tests.robot',
+            'tests/BSNLibrary_test/2_Error_handling.robot',
+            'tests/BSNLibrary_test/3_Demos.robot',
+            'tests/BSNLibrary_test/Resource.robot']),
+        ('Lib/site-packages/BSNLibrary/tests/BSNLibrary_test_old_syntax', [
+            'tests/BSNLibrary_test_old_syntax/__init__.robot',
+            'tests/BSNLibrary_test_old_syntax/1_Functional_tests.robot',
+            'tests/BSNLibrary_test_old_syntax/2_Error_handling.robot',
+            'tests/BSNLibrary_test_old_syntax/3_Demos.robot',
+            'tests/BSNLibrary_test_old_syntax/Resource.robot'])
     ],
     install_requires=['robotframework'],
     python_requires='>=2.7'
