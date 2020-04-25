@@ -6,7 +6,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name='robotframework-bsnlibrary',
-    version='0.3',
+    version='0.4.0',
     packages=['BSNLibrary'],
     url='https://github.com/HaaiHenkie/bsnlibrary',
     project_urls={
@@ -29,6 +29,14 @@ setup(
         "Programming Language :: Python :: 2.7",
         "Programming Language :: Python :: 3",
         "Operating System :: OS Independent",
+    ],
+    data_files=[
+        ('Lib/site-packages/BSNLibrary/docs', ['docs/index.html']),
+        ('Lib/site-packages/BSNLibrary/tests', ['tests/BSNLibrary_test/__init__.robot',
+                                                'tests/BSNLibrary_test/1_Functional_tests.robot',
+                                                'tests/BSNLibrary_test/2_Error_handling.robot',
+                                                'tests/BSNLibrary_test/3_Demos.robot',
+                                                'tests/BSNLibrary_test/Resource.robot'])
     ],
     install_requires=['robotframework'],
     python_requires='>=2.7'

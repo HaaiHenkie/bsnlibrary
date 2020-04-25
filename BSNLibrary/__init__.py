@@ -34,13 +34,31 @@ Possible use cases:
 - Creating messages with BSNs in a certain range that leads to a certain response from a system or stub
 - Checking whether a test message contains a valid BSN
 
-Installation:
+== Backward compatibility ==
+So far all releases have been backward compatible, including current release 0.4.0. However, in the current release
+the use of `Generate BSN` for validation has been deprecated. When your test suite still uses ``Generate BSN`` for
+validation, you will receive a warning and a recommendation to replace it with the keyword `Validate BSN`. In the
+next major release using `Generate BSN` for validation will result in an error message.
 
+Please note that I have changed version labels v0.1, v0.2 and v0.3 to v0.1.0, v0.2.0 and v0.3.0 in order to comply
+with semantic versioning.
+
+== Installation ==
 ``pip install robotframework-bsnlibrary``
+
+Apart from the library files, the following files are installed
+
+| *File* | *Description* |
+| <python dir>/Lib/site-packages/BSNLibrary/docs/index.html | Local copy of this keyword documentation |
+| <python dir>/Lib/site-packages/BSNLibrary/tests/BSNLibrary_test/ | Robot Framework (v3.1 or later) test suite for testing BSNLibrary |
+
+== General information ==
 
 [https://pypi.org/project/robotframework-bsnlibrary/|Installation package on PyPI]
 
 [https://github.com/HaaiHenkie/bsnlibrary|GitHub repository]
+
+[https://github.com/HaaiHenkie/bsnlibrary/releases|Release notes]
 
 Create date: 01-03-2020
 
@@ -56,65 +74,57 @@ following information is relevant for the few cases that need a smaller or large
 
 == Reducing the scope ==
 Uniqueness is established by a list of generated BSNs. Every time `Generate BSN` is used it will exclude the BSNs on
-this list add the generated BSN to this list. The scope of uniqueness and exclusion can be ended by clearing the list
-of generated BSNs and the list of excluded BSNs respectively. So to limit, for example, the scope of uniqueness to a
-suite, use `Clear Generated BSNs` in the teardown of the suite and of the previous suite. Suppose you need each test
-to have its own set of excluded BSNs, use `Exclude BSNs` in de setup of each test and `Clear Excluded BSNs` in the
-teardown of each test.
+this list and add the generated BSN to this list. The scope of uniqueness and exclusion can be ended by clearing the
+list of generated BSNs and the list of excluded BSNs respectively. So to limit, for example, the scope of uniqueness
+to a suite, use `Clear Generated BSNs` in the teardown of the suite and of the previous suite. Suppose you need each
+test to have its own set of excluded BSNs, use `Exclude BSNs` in de setup of each test and `Clear Excluded BSNs` in
+the teardown of each test.
 
 == Extending the scope ==
 It is possible to extend the scope of uniqueness of BSNs over test runs with `Get Generated BSNs` and `Get Excluded
 BSNs` at the end of the test run and appending this list to a file. Then at the start of a test run read the list
 from the file and offer it as input to `Exclude BSNs`. However, you cannot do this infinitely, because after a
 certain amount of repetitions the list of excluded BSNs will be so large that it will lead to performance or other
-problems.
-
-=== Example ===
-It is not possible to save lists directly in a file. This example shows how it could be done with an underscore as
-separator. It also shows how to reset the stored list after a threshold of 100000 BSNs is reached.
-
-| ${status}= | Run Keyword And Return Status | File Should Exist | bsnlist.txt |
-| ${bsnlist}= | Run Keyword If | ${status}==True | Get File |  bsnlist.txt |
-| ${bsnlist}= | Run Keyword If | ${status}==True | Split String | ${bsnlist} | _ |
-| ${length}= | Run Keyword If | ${status}==True | Get Length | ${bsnlist} |
-| ... | ELSE | Set Variable | 0 |
-| Run Keyword If | ${status}==True and ${length}<100000 | Exclude BSNs | ${bsnlist} |
-| FOR | ${i} | IN RANGE | 100 |
-| | Generate BSN |
-| END |
-| ${excluded}= | Get Excluded BSNs |
-| ${generated}= | Get Generated BSNs |
-| ${bsnlist}= | Combine Lists | ${excluded} | ${generated} |
-| ${bsnlist}= | Evaluate | "_".join($bsnlist) |
-| Create File | bsnlist.txt | ${bsnlist} |
+problems. The BSNLibary_test suite, see `Installation`, contains example 'Extending the scope of uniqueness beyond
+one test run' under '3 Demos'.
 
 = Troubleshooting =
-Most exceptions are self-explanatory. The following exception (with example counts and arguments) needs more
-explanation:
+Most exceptions are self-explanatory. The BSNLibary_test suite, see `Installation`, demonstrates how  BSNLibrary
+exceptions can be reproduced.
 
-| 'Generate BSN' was not able to generate a unique BSN after 1000 retries. You have generated 900 of approximately
-| 900 unique BSNs that are possible with 9 excluded BSNs and arguments given=12345 and length=9.
+The following exception (with example counts and arguments) needs more explanation:
 
-This means that all or almost all possible BSNs within the given restrictions have been generated. For further insight
-you could use `Get Generated BSNs` and `Get Excluded BSNs` to log those lists just before this exception occurs. The
-exception only counts generated and excluded BSNs that could have been generated with the current arguments.
+| 'Generate BSN' was not able to generate a unique BSN after 1000 retries. You have generated 900 out of the 900 or
+| 901 unique BSNs that are permitted by 9 excluded BSNs and arguments given=12345 and length=9.
+
+This means that all or more than 99% of all possible BSNs within the given restrictions have been generated. For
+further insight you could use `Get Generated BSNs` and `Get Excluded BSNs` to log those lists just before this
+exception occurs. The exception only counts generated and excluded BSNs that could have been generated with the
+current arguments.
 
 Possible solutions are:
-- Use `unique=False` if you do not need unique BSNs
+- Use ``unique=False`` if you do not need unique BSNs
 - Use a smaller scope for uniqueness and exclusion, see `Reducing the scope`
-- Limit the length of `given` and/or avoid using the same value for `given` repeatedly
+- Limit the length of ``given`` and/or avoid using the same value for ``given`` repeatedly
 - Reduce the list of excluded BSNs
+
+`Generate BSN` generates numbers randomly and is not suitable for generating all possible numbers in a range of 10000
+or more number. If you want to find all BSNs in a range, divide the range in smaller ranges of 100 numbers and loop
+through those ranges. The BSNLibary_test suite, see `Installation`, contains example 'Finding all BSNs in a range'
+under '3 Demos'.
 
 There is a similar second exception (again with example counts and arguments)
 
 | 'Generate BSN' was not able to generate a BSN outside the list of excluded BSNs after 1000 retries. You have
-| excluded 909 of approximately 909 BSNs that are possible with arguments given=12345 and length=9.
+| excluded 909 out of the 909 or 910 BSNs that are permitted by arguments given=12345 and length=9.
 
-In this case only the last two possible solutions apply.
+In this case only the last two possible solutions apply. Unless your were intentionally trying to do the impossible,
+I would like you [https://github.com/HaaiHenkie/bsnlibrary/issues/new|to log] how you ended up with this last
+exception, so that I have anecdotal evidence that I did not include this exception for nothing.
 
 If you experience slow performance this is probably caused by a large number of both generated BSNs and excluded BSNs
-combined with a relatively small number of BSNs that possibly can be generated. The possible solutions are the same as
-for the exceptions above.
+that have used a large percentage of all BSNs that are permitted by current arguments. The possible solutions are the
+same as for the exceptions above.
 
 When you are not able to resolve a problem regarding BSNLibrary,
 [https://github.com/HaaiHenkie/bsnlibrary/issues/new|register an issue].
@@ -126,11 +136,12 @@ from BSNLibrary import exceptions
 from robot.api import deco
 import logging
 
-__version__ = '0.3'
+__version__ = '0.4.0'
 ROBOT_LIBRARY_SCOPE = 'GLOBAL'
 VALID_LENGTH = {6, 7, 8, 9}
 used_bsns = []
 excluded_bsns = []
+deprecated = True
 
 
 @deco.keyword('Generate BSN')
@@ -140,19 +151,20 @@ def generate_bsn(given="", length=9, unique=True):
     within a test run and is added to a list that can be accessed with Get Generated BSNs. It will not generate
     numbers specified with `Exclude BSNs`.
 
-    `given` argument can be used to specify the first digits of the number to be generated, thus
+    ``given`` argument can be used to specify the first digits of the number to be generated, thus
     restricting the range within which the number is generated.
     - To generate a number outside the default range, specify 0, 8 or 9 as the first digit
-    - To validate a number, specify the complete number (the number of digits is equal to `length`)
+    - *Deprecated, use `Validate BSN` instead:* To validate a number, specify the complete number (the number of
+      digits is equal to ``length``)
     - To generate an invalid number, specify '999' as the first three digits
-    - The `given` string can only contain digits
-    - The number of digits should be smaller than `length - 1` or equal to `length`
+    - The ``given`` string can only contain digits
+    - The number of digits should be smaller than ``length - 1`` or equal to ``length``
 
-    `length` argument can be used to generate a number of less than 9 positions, for example when a BSN of 8
-    positions is needed.
-        - Only values 6, 7, 8 or 9 are allowed
+    ``length`` argument can be used to generate a number of less than 9 positions, for example to test a situation
+    where it is permitted to leave out leading zeroes or a situation where this is not permitted.
+    - Only values 6, 7, 8 or 9 are allowed
 
-    If `unique` is given a `False` value the keyword no longer enforces that the generated BSN is unique within a
+    If ``unique`` is given a ``False`` value the keyword no longer enforces that the generated BSN is unique within a
     test run, nor will it add the generated number to the list of generated BSNs. Can be used in situations that
     uniqueness is not a requirement and enforcing it leads to problems.
 
@@ -175,26 +187,36 @@ def generate_bsn(given="", length=9, unique=True):
     | ${bsn6} = 30340731
     """
     global used_bsns
+    global deprecated
     given = str(given)
     given_length = len(given)
     length = int(length)
+    if given_length == length and deprecated:
+        logging.warning("Validation with 'Generate BSN' is deprecated. Use 'Validate BSN' instead.")
+    else:
+        deprecated = True
     if length not in VALID_LENGTH:
         raise ValueError("Value for length must be 6, 7, 8 or 9.")
-    if given_length > length or given_length == length - 1:
+    forbidden = length - 1
+    if given_length > length or given_length == forbidden:
         raise exceptions.GivenNumberWrongLength(textwrap.dedent("""\
-            The length of the given number, %d digits, is longer than length, %d, 
-            or equal to length - 1. That is not allowed.""" % (given_length, length)))
+            The length of the given number, %d digits, is not allowed. For validating a BSN this length should be 
+            equal to the 'length' argument, in this case %d. For generating a BSN this length should be smaller than 
+            the 'length' argument - 1, in this case smaller than %d.""" % (given_length, length, forbidden)))
     if str(unique).lower() in ('false', 'none', 'no', 'off', '0') or given_length == length:
         unique = False
     else:
         unique = bool(unique)
     power = length - given_length
     all_numbers = 10 ** power
-    valid_numbers = int(all_numbers / 11)
+    min_numbers = int(all_numbers / 11)
+    max_numbers = min_numbers + 1
     if given[:3] == "999":
-        valid_numbers = all_numbers - valid_numbers
+        min_numbers = all_numbers - max_numbers
+        max_numbers = min_numbers + 1
     excluded_matches = sum(e[:given_length] == given and len(e) == length for e in excluded_bsns)
-    approx_possible = valid_numbers - excluded_matches
+    min_possible = min_numbers - excluded_matches
+    max_possible = min_possible + 1
     if unique:
         generated_bsn = ""
         iteration = 0
@@ -203,10 +225,11 @@ def generate_bsn(given="", length=9, unique=True):
             if iteration == 1001:
                 used_matches = sum(e[:given_length] == given and len(e) == length for e in used_bsns)
                 raise exceptions.FailedToGenerateAllowedBSN(textwrap.dedent("""\
-                    'Generate BSN' was not able to generate a unique BSN after 1000 retries. You have generated %d of 
-                    approximately %d unique BSNs that are possible with %d excluded BSNs and arguments given=%s and 
-                    length=%d. See section Troubleshooting on web page https://haaihenkie.github.io/bsnlibrary/ for 
-                    possible solutions.""" % (used_matches, approx_possible, excluded_matches, given, length)))
+                    'Generate BSN' was not able to generate a unique BSN after 1000 retries. You have generated %d 
+                    out of the %d or %d unique BSNs that are permitted by %d excluded BSNs and arguments given=%s 
+                    and length=%d. See section Troubleshooting on web page https://haaihenkie.github.io/bsnlibrary/ 
+                    for possible solutions.""" % (used_matches, min_possible, max_possible, excluded_matches, given,
+                    length)))
             generated_bsn = generate_bsn(given, length, False)
         used_bsns.append(generated_bsn)
         return generated_bsn
@@ -221,9 +244,9 @@ def generate_bsn(given="", length=9, unique=True):
             if iteration == 1001:
                 raise exceptions.FailedToGenerateAllowedBSN(textwrap.dedent("""\
                     'Generate BSN' was not able to generate a BSN outside the list of excluded BSNs after 1000 
-                    retries. You have excluded %d of approximately %d BSNs that are possible with arguments given=%s
-                    and length=%d. See section Troubleshooting on web page https://haaihenkie.github.io/bsnlibrary/ for 
-                    possible solutions.""" % (excluded_matches, valid_numbers, given, length)))
+                    retries. You have excluded %d out of the %d or %d BSNs that are permitted by arguments given=%s 
+                    and length=%d. See section Troubleshooting on web page https://haaihenkie.github.io/bsnlibrary/ 
+                    for possible solutions.""" % (excluded_matches, min_numbers, max_numbers, given, length)))
             sum_product = 0
             pos = length
             digit1 = None
@@ -240,7 +263,7 @@ def generate_bsn(given="", length=9, unique=True):
                             digit1 = d
                         pos = pos - 1
                     except (TypeError, ValueError) as e:
-                        e.args = ("The character '%s' is not a digit. Only use digits in the given number." % d,)
+                        e.args = ("Character '%s' is not a digit. Only use digits as part of a BSN." % d,)
                         raise
             else:
                 digit = random.randint(1, 7)
@@ -261,20 +284,18 @@ def generate_bsn(given="", length=9, unique=True):
             if given[:3] == "999" and given_length < length:
                 digit1 = _exclude_digit(mod)
             else:
-                if mod == 10:
-                    if given_length == length:
-                        raise exceptions.NumberNotValid("The given number '%s' is not valid." % given)
-                    else:
-                        sum_product = sum_product - digit2 * 2
-                        generated_bsn = generated_bsn[:-1]
-                        digit2 = _exclude_digit(digit2)
-                        generated_bsn += str(digit2)
-                        sum_product = sum_product + digit2 * 2
-                        mod = sum_product % 11
-                        digit1 = mod
-                elif given_length == length:
+                if given_length == length:
                     if digit1 != mod:
                         raise exceptions.NumberNotValid("The given number '%s' is not valid." % given)
+                elif mod == 10:
+                    # logging.info("REMAINDER 10 GENERATION PATH: generated string '%s'." % generated_bsn)
+                    sum_product = sum_product - digit2 * 2
+                    generated_bsn = generated_bsn[:-1]
+                    digit2 = _exclude_digit(digit2)
+                    generated_bsn += str(digit2)
+                    sum_product = sum_product + digit2 * 2
+                    mod = sum_product % 11
+                    digit1 = mod
                 else:
                     digit1 = mod
             generated_bsn += str(digit1)
@@ -288,6 +309,22 @@ def _exclude_digit(digit):
     return new
 
 
+@deco.keyword('Validate BSN')
+def validate_bsn(bsn):
+    """
+    Validates the given BSN, i.e. checks if it passes the eleven test.
+
+    ``bsn`` argument is a string of 6, 7, 8 or 9 digits
+    """
+    global deprecated
+    deprecated = False
+    length = len(bsn)
+    if length not in VALID_LENGTH:
+        raise ValueError("Length of BSN can only be 6, 7, 8 or 9 digits.")
+    generate_bsn(bsn, length, False)
+    logging.info("The BSN '%s' is valid." % bsn)
+
+
 @deco.keyword('Get Generated BSNs')
 def get_generated_bsns():
     """
@@ -298,7 +335,7 @@ def get_generated_bsns():
 
     | Clear Generated BSNs | | | | | # Clears BSNs generated so far |
     | FOR | ${i} | IN RANGE | 0 | 100 |
-    | | Generate BSN | | | | # Do not use `unique=False` |
+    | | Generate BSN | | | | # Do not use ``unique=False`` |
     | END | | | | | # for no list will be generated |
     | @{generated_bsns} = | Get Generated BSNs | | | | # A list of 100 unique BSNs |
     """
@@ -308,7 +345,7 @@ def get_generated_bsns():
 @deco.keyword('Clear Generated BSNs')
 def clear_generated_bsns():
     """
-    Clears the list of BSNs generated by `Generate BSN` with argument `unique=True`. See in `Scope of uniqueness and
+    Clears the list of BSNs generated by `Generate BSN` with argument ``unique=True``. See in `Scope of uniqueness and
     exclusion` how this can be used to reduce the scope of uniqueness.
     """
     global used_bsns
@@ -321,10 +358,10 @@ def clear_generated_bsns():
 def exclude_bsns(bsnlist):
     """
     Excludes BSNs from being generated from the moment it is used until the end of the test run or until `Clear
-    Excluded BSNs` is used. It will combine `bsnlist` with previously excluded BSNs. If you need `bsnlist` to replace
-    previously excluded BSNs, use `Clear Excluded BSNs` first.
+    Excluded BSNs` is used. It will combine ``bsnlist`` with previously excluded BSNs. If you need ``bsnlist`` to
+    replace previously excluded BSNs, use `Clear Excluded BSNs` first.
 
-    `bsnlist` is the list of BSNs to be excluded
+    ``bsnlist`` is a single BSN or a list of BSNs to be excluded
 
     == Example ==
 
@@ -333,7 +370,8 @@ def exclude_bsns(bsnlist):
     """
     global excluded_bsns
     if type(bsnlist) is not list:
-        raise ValueError("Input for argument bsnlist is not a list.")
+        bsn = bsnlist
+        bsnlist = [bsn]
     excluded_bsns = bsnlist + list(set(excluded_bsns) - set(bsnlist))
 
 

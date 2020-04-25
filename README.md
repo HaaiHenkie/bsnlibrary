@@ -37,13 +37,24 @@ Possible use cases:
 - Creating messages with BSNs in a certain range that leads to a certain response from a system or stub
 - Checking whether a test message contains a valid BSN
 
-Installation:
+## Backward compatibility
+So far all releases have been backward compatible, including current release 0.4.0. However, in the current release
+the use of `Generate BSN` for validation has been deprecated. When your test suite still uses ``Generate BSN`` for
+validation, you will receive a warning and a recommendation to replace it with the keyword `Validate BSN`. In the
+next major release using `Generate BSN` for validation will result in an error message.
 
+Please note that I have changed version labels v0.1, v0.2 and v0.3 to v0.1.0, v0.2.0 and v0.3.0 in order to comply 
+with semantic versioning.
+
+## Installation
 ``pip install robotframework-bsnlibrary``
 
+## General information
 [Keyword documentation](https://haaihenkie.github.io/bsnlibrary/)
 
 [Installation package on PyPI](https://pypi.org/project/robotframework-bsnlibrary/)
+
+[Release notes](https://github.com/HaaiHenkie/bsnlibrary/releases)
 
 Create date: 01-03-2020
 
