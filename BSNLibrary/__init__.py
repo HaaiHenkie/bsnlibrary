@@ -151,14 +151,13 @@ excluded_bsns = []
 def generate_bsn(given="", length=9, unique=True):
     """
     Generates a number between 100000000 and 799999999 that passes the eleven test. By default this BSN is unique
-    within a test run and is added to a list that can be accessed with Get Generated BSNs. It will not generate
-    numbers specified with `Exclude BSNs`.
+    within a test run and is added to a list that can be accessed with `Get Generated BSNs`. It will not generate
+    numbers specified with `Exclude BSNs`. As of BSNLibrary version 1.0.0 it is not possible to use this keyword
+    for validation of BSNs anymore. Use `Validate BSN` instead.
 
     ``given`` argument can be used to specify the first digits of the number to be generated, thus
     restricting the range within which the number is generated.
     - To generate a number outside the default range, specify 0, 8 or 9 as the first digit
-    - *Deprecated, use `Validate BSN` instead:* To validate a number, specify the complete number (the number of
-      digits is equal to ``length``)
     - To generate an invalid number, specify '999' as the first three digits
     - The ``given`` string can only contain digits
     - The maximum number of digits is ``length - 2``
@@ -171,26 +170,28 @@ def generate_bsn(given="", length=9, unique=True):
     test run, nor will it add the generated number to the list of generated BSNs. Can be used in situations that
     uniqueness is not a requirement and enforcing it leads to problems.
 
-    == Examples ==
-
+    Examples:
     | ${bsn1} = | Generate BSN | | # Generates a valid BSN between 100000000 and 799999999. |
+    | Validate BSN | ${bsn1} | | # Validates the generated valid BSN. |
     | ${bsn2} = | Generate BSN | 85 | # Generates a valid BSN with '85' as the first 2 digits. |
-    | ${bsn3} = | Generate BSN | 211551557 | # Validates the given (valid) BSN. |
-    | ${bsn4} = | Generate BSN | 9994 | # Generates an invalid BSN. |
-    | ${bsn5} = | Generate BSN | ${bsn4} | # Validates the given (invalid) BSN. |
-    | ${bsn6} = | Generate BSN | length=8 | # Generates a BSN with 8 positions. |
-
-    === Example results ===
-
+    | ${bsn3} = | Generate BSN | 9994 | # Generates an invalid BSN. |
+    | Validate BSN | ${bsn3} | | # Validates the generated invalid BSN. |
+    | ${bsn4} = | Generate BSN | length=8 | # Generates a BSN with 8 positions. |
+    =>
     | ${bsn1} = 771052066
+    | INFO : The BSN '771052066' is valid.
     | ${bsn2} = 853380107
-    | ${bsn3} = 211551557
-    | ${bsn4} = 999450437
-    | ${bsn5} => FAIL : The given number '999450437' is not valid.
-    | ${bsn6} = 30340731
+    | ${bsn3} = 999450437
+    | FAIL : The given number '999450437' is not a valid BSN.
+    | ${bsn4} = 30340731
     """
     given = str(given)
     given_length = len(given)
+    try:
+        length = int(length)
+    except (TypeError, ValueError) as e:
+        e.args = ("Value for length must be 6, 7, 8 or 9.",)
+        raise
     if length not in VALID_LENGTH:
         raise ValueError("Value for length must be 6, 7, 8 or 9.")
     max_length = length - 2
@@ -292,7 +293,7 @@ def _generate_validate(given, length, given_length):
     else:
         if given_length == length:
             if digit1 != mod:
-                raise exceptions.NumberNotValid("The given number '%s' is not valid." % given)
+                raise exceptions.NumberNotValid("The given number '%s' is not a valid BSN." % given)
         elif mod == 10:
             # logging.info("REMAINDER 10 GENERATION PATH: generated string '%s'." % generated_bsn)
             sum_product = sum_product - digit2 * 2
@@ -321,6 +322,13 @@ def validate_bsn(bsn):
     Validates the given BSN, i.e. checks if it passes the eleven test.
 
     ``bsn`` argument is a string of 6, 7, 8 or 9 digits
+
+    Examples:
+    | Validate BSN | 627708195 | # Validation of a valid BSN. |
+    | Validate BSN | 566709883 | # Validation of an invalid BSN. |
+    =>
+    | INFO : The BSN '627708195' is valid.
+    | FAIL : The given number '566709883' is not a valid BSN.
     """
     bsn = str(bsn)
     length = len(bsn)
@@ -336,13 +344,15 @@ def get_generated_bsns():
     Returns a list of unique BSNs that are generated with `Generate BSN` within the current test run. It can be used
     to create such a list or to inspect the current list for troubleshooting purposes.
 
-    == Example ==
-
-    | Clear Generated BSNs | | | | | # Clears BSNs generated so far |
-    | FOR | ${i} | IN RANGE | 0 | 100 |
-    | | Generate BSN | | | | # Do not use ``unique=False`` |
-    | END | | | | | # for no list will be generated |
-    | @{generated_bsns} = | Get Generated BSNs | | | | # A list of 100 unique BSNs |
+    Example:
+    | Clear Generated BSNs |                    |          |   | # Clears BSNs generated so far  |
+    | FOR                  | ${i}               | IN RANGE | 3 |                                 |
+    |                      | Generate BSN       |          |   | # Do not use ``unique=False``   |
+    | END                  |                    |          |   | # for no list will be generated |
+    | ${generated_bsns} =  | Get Generated BSNs |          |   | # A list of 3 unique BSNs       |
+    =>
+    | INFO : List of 0 generated BSNs has been cleared.
+    | INFO : ${generated_bsns} = ['143828654', '123095141', '189392307']
     """
     return used_bsns
 
@@ -352,6 +362,18 @@ def clear_generated_bsns():
     """
     Clears the list of BSNs generated by `Generate BSN` with argument ``unique=True``. See in `Scope of uniqueness and
     exclusion` how this can be used to reduce the scope of uniqueness.
+
+    Example:
+    | FOR                  | ${i}               | IN RANGE | 3 |
+    |                      | Generate BSN       |
+    | END                  |                    |
+    | ${generated_bsns} =  | Get Generated BSNs |
+    | Clear Generated BSNs |                    |
+    | ${generated_bsns} =  | Get Generated BSNs |
+    =>
+    | INFO : ${generated_bsns} = ['514169138', '287516635', '715755407']
+    | INFO : List of 3 generated BSNs has been cleared.
+    | INFO : ${generated_bsns} = []
     """
     global used_bsns
     count = len(used_bsns)
@@ -368,10 +390,14 @@ def exclude_bsns(bsnlist):
 
     ``bsnlist`` is a single BSN or a list of BSNs to be excluded
 
-    == Example ==
-
-    | ${bsnlist}= | Create List | 267227607 | 307684945 | 643897100 |
-    | Exclude BSNs | ${bsnlist} |
+    Example:
+    | ${bsnlist} =       | Create List       | 267227607 | 307684945 | 643897100 |
+    | Exclude BSNs       | ${bsnlist}        |
+    | Exclude BSNs       | 501840151         |
+    | ${excluded_bsns} = | Get Excluded BSNs |
+    =>
+    | INFO : ${bsnlist} = ['267227607', '307684945', '643897100']
+    | INFO : ${excluded_bsns} = ['501840151', '307684945', '267227607', '643897100']
     """
     global excluded_bsns
     if type(bsnlist) is not list:
@@ -384,6 +410,18 @@ def exclude_bsns(bsnlist):
 def clear_excluded_bsns():
     """
     Clears list of excluded BSNs and ends the scope of `Exclude BSNs`. See also `Scope of uniqueness and exclusion`.
+
+    Example:
+    | ${bsnlist} =        | Create List       | 469641459 | 376670149 | 671472847 |
+    | Exclude BSNs        | ${bsnlist}        |
+    | ${excluded_bsns} =  | Get Excluded BSNs |
+    | Clear Excluded BSNs |
+    | ${excluded_bsns} =  | Get Excluded BSNs |
+    =>
+    | INFO : ${bsnlist} = ['469641459', '376670149', '671472847']
+    | INFO : ${excluded_bsns} = ['469641459', '376670149', '671472847']
+    | INFO : The list of excluded BSNs has been cleared.
+    | INFO : ${excluded_bsns} = []
     """
     global excluded_bsns
     del excluded_bsns[:]
@@ -394,5 +432,13 @@ def clear_excluded_bsns():
 def get_excluded_bsns():
     """
     Gets the list of excluded BSNs to inspect it for troubleshooting purposes.
+
+    Example:
+    | ${bsnlist} =        | Create List       | 423932020 | 107004422 | 233354773 |
+    | Exclude BSNs        | ${bsnlist}        |
+    | ${excluded_bsns} =  | Get Excluded BSNs |
+    =>
+    | INFO : ${bsnlist} = ['423932020', '107004422', '233354773']
+    | INFO : ${excluded_bsns} = ['423932020', '107004422', '233354773']
     """
     return excluded_bsns

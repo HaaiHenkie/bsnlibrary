@@ -256,5 +256,5 @@ Validate invalid BSNs with variable length
     Append To List    ${bsns}    207232909    23533128    7894067    314616
     # Validate all given BSNs
     FOR    ${bsn}    IN    @{bsns}
-        Run Keyword and Expect Error    The given number '${bsn}' is not valid.    Validate BSN    ${bsn}
+        Run Keyword and Expect Error    The given number '${bsn}' is not a valid BSN.    Validate BSN    ${bsn}
     END

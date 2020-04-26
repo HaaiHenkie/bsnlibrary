@@ -32,7 +32,7 @@ Generate and validate 100 invalid BSNs
         ${odd}    Evaluate    ${i} % 2
         ${bsn}    Run Keyword If    ${odd} == 0 and ${length} == 9    Generate BSN    999
         ...    ELSE    Generate BSN    999    length=${length}
-        Run Keyword and Expect Error    The given number '${bsn}' is not valid.    Validate BSN    ${bsn}
+        Run Keyword and Expect Error    The given number '${bsn}' is not a valid BSN.    Validate BSN    ${bsn}
         ${check}    Get Length    ${bsn}
         Should Be Equal As Integers    ${length}    ${check}
         ${min}    Evaluate    999000*10**${length-6}-1
