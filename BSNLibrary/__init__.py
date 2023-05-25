@@ -68,7 +68,7 @@ Create date: 01-03-2020
 
 Author: Henk van den Akker
 
-License: GNU General Public License v3.0
+License: MIT License (Expat)
 
 = Scope of uniqueness and exclusion =
 `Generate BSN` will by default generate a unique BSN every time it is used throughout the test run. After using
@@ -140,7 +140,7 @@ from BSNLibrary import exceptions
 from robot.api import deco
 import logging
 
-__version__ = '1.0.0'
+__version__ = '1.1.0'
 ROBOT_LIBRARY_SCOPE = 'GLOBAL'
 VALID_LENGTH = {6, 7, 8, 9}
 used_bsns = []

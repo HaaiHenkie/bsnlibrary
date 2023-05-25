@@ -1,4 +1,4 @@
-/venv/
+/venv*/
 /.idea/
 __pycache__/
 /build/
@@ -6,3 +6,5 @@ __pycache__/
 /robotframework_bsnlibrary.egg-info/
 /tests/reports/
 bsnlist.txt
+Pipfile
+Pipfile.lock

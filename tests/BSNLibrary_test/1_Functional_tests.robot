@@ -155,25 +155,25 @@ Clear list of generated BSNs with variable length
     ...
     ...    The following statements are used by ``statuschecker`` to check the messages of _Clear Generated BSNs_
     ...
-    ...    LOG 3.1.1.1.1 GLOB: List of * generated BSNs has been cleared.
+    ...    LOG 2.1.1.1.1 GLOB: List of * generated BSNs has been cleared.
     ...
-    ...    LOG 3.1.1.9 INFO List of 9 generated BSNs has been cleared.
+    ...    LOG 2.1.1.9 INFO List of 9 generated BSNs has been cleared.
     ...
-    ...    LOG 3.2.1.1.1 INFO List of 9 generated BSNs has been cleared.
+    ...    LOG 2.2.1.1.1 INFO List of 9 generated BSNs has been cleared.
     ...
-    ...    LOG 3.2.1.9 INFO List of 9 generated BSNs has been cleared.
+    ...    LOG 2.2.1.9 INFO List of 9 generated BSNs has been cleared.
     ...
-    ...    LOG 3.3.1.1.1 INFO List of 9 generated BSNs has been cleared.
+    ...    LOG 2.3.1.1.1 INFO List of 9 generated BSNs has been cleared.
     ...
-    ...    LOG 3.3.1.9 INFO List of 9 generated BSNs has been cleared.
+    ...    LOG 2.3.1.9 INFO List of 9 generated BSNs has been cleared.
     ...
-    ...    LOG 3.4.1.1.1 INFO List of 9 generated BSNs has been cleared.
+    ...    LOG 2.4.1.1.1 INFO List of 9 generated BSNs has been cleared.
     ...
-    ...    LOG 3.4.1.9 INFO List of 9 generated BSNs has been cleared.
+    ...    LOG 2.4.1.9 INFO List of 9 generated BSNs has been cleared.
     ...
-    ...    LOG 3.5.1.1.1 INFO List of 9 generated BSNs has been cleared.
+    ...    LOG 2.5.1.1.1 INFO List of 9 generated BSNs has been cleared.
     ...
-    ...    LOG 3.5.1.9 INFO List of 9 generated BSNs has been cleared.
+    ...    LOG 2.5.1.9 INFO List of 9 generated BSNs has been cleared.
     @{lengths}    Create List    ${None}    ${9}    ${8}    ${7}    ${6}
     FOR    ${length}    IN    @{lengths}
         Clear list of generated BSNs    ${length}
@@ -196,25 +196,25 @@ Clear list of excluded BSNs with variable length
     ...
     ...    The following statements are used by ``statuschecker`` to check the messages of _Clear Excluded BSNs_
     ...
-    ...    LOG 3.1.1.1.2 INFO The list of excluded BSNs has been cleared.
+    ...    LOG 2.1.1.1.2 INFO The list of excluded BSNs has been cleared.
     ...
-    ...    LOG 3.1.1.12 INFO The list of excluded BSNs has been cleared.
+    ...    LOG 2.1.1.12 INFO The list of excluded BSNs has been cleared.
     ...
-    ...    LOG 3.2.1.1.2 INFO The list of excluded BSNs has been cleared.
+    ...    LOG 2.2.1.1.2 INFO The list of excluded BSNs has been cleared.
     ...
-    ...    LOG 3.2.1.12 INFO The list of excluded BSNs has been cleared.
+    ...    LOG 2.2.1.12 INFO The list of excluded BSNs has been cleared.
     ...
-    ...    LOG 3.3.1.1.2 INFO The list of excluded BSNs has been cleared.
+    ...    LOG 2.3.1.1.2 INFO The list of excluded BSNs has been cleared.
     ...
-    ...    LOG 3.3.1.12 INFO The list of excluded BSNs has been cleared.
+    ...    LOG 2.3.1.12 INFO The list of excluded BSNs has been cleared.
     ...
-    ...    LOG 3.4.1.1.2 INFO The list of excluded BSNs has been cleared.
+    ...    LOG 2.4.1.1.2 INFO The list of excluded BSNs has been cleared.
     ...
-    ...    LOG 3.4.1.12 INFO The list of excluded BSNs has been cleared.
+    ...    LOG 2.4.1.12 INFO The list of excluded BSNs has been cleared.
     ...
-    ...    LOG 3.5.1.1.2 INFO The list of excluded BSNs has been cleared.
+    ...    LOG 2.5.1.1.2 INFO The list of excluded BSNs has been cleared.
     ...
-    ...    LOG 3.5.1.12 INFO The list of excluded BSNs has been cleared.
+    ...    LOG 2.5.1.12 INFO The list of excluded BSNs has been cleared.
     @{lengths}    Create List    ${None}    ${9}    ${8}    ${7}    ${6}
     FOR    ${length}    IN    @{lengths}
         Clear list of excluded BSNs    ${length}
@@ -228,13 +228,13 @@ Validate a valid BSN with variable lengths
     ...
     ...    The following statements are used by ``statuschecker`` to check the messages of _Clear Generated BSNs_
     ...
-    ...    LOG 3.1.1 INFO The BSN '747359489' is valid.
+    ...    LOG 2.1.1 INFO The BSN '747359489' is valid.
     ...
-    ...    LOG 3.2.1 INFO The BSN '25221577' is valid.
+    ...    LOG 2.2.1 INFO The BSN '25221577' is valid.
     ...
-    ...    LOG 3.3.1 INFO The BSN '1763921' is valid.
+    ...    LOG 2.3.1 INFO The BSN '1763921' is valid.
     ...
-    ...    LOG 3.4.1 INFO The BSN '353000' is valid.
+    ...    LOG 2.4.1 INFO The BSN '353000' is valid.
     @{bsns}    Create List    747359489    25221577    1763921    353000
     FOR    ${bsn}    IN    @{bsns}
         Validate BSN    ${bsn}
